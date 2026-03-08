@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi em yêu ❤️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Nunito', sans-serif;
+            background-color: #000;
+        }
+
+        .page {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* --- PAGE 1: MẬT KHẨU --- */
+        #page1 {
+            background: url('bg1.jpg') center/cover no-repeat;
+        }
+        
+        .numpad-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .password-display {
+            width: 100%;
+            height: 50px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 30px;
+            letter-spacing: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .key {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .key:active, .key.glow {
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 20px #fff, 0 0 40px #ff6b81;
+            transform: scale(0.95);
+        }
+
+        .key.enter {
+            grid-column: span 3;
+            width: 100%;
+            border-radius: 15px;
+            background: rgba(255, 107, 129, 0.7);
+        }
+
+        /* --- PAGE 2: CÂU HỎI --- */
+        #page2 {
+            background: url('bg2.gif') center/cover no-repeat;
+        }
+
+        .question-box {
+            background: rgba(0,0,0,0.6);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .question-box h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 40px;
+            margin-bottom: 30px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        #btnYes {
+            background-color: #2ecc71;
+            color: white;
+            position: relative;
+            z-index: 100;
+        }
+
+        #btnNo {
+            background-color: #e74c3c;
+            color: white;
+            z-index: 10;
+        }
+
+        /* --- PAGE 3: TRÁI TIM 3D & QUÀ --- */
+        #page3 {
+            background-color: #050505;
+            cursor: pointer;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hint-text {
+            position: absolute;
+            top: 20%;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 18px;
+            z-index: 2;
+            pointer-events: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        #giftContainer {
+            position: absolute;
+            bottom: 20%;
+            z-index: 10;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #btnGift {
+            padding: 15px 50px;
+            font-size: 22px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b81, #ff4757);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 107, 129, 0.6);
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        /* --- MODAL LỜI CHÚC --- */
+        #finalModal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 90%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 107, 129, 0.8);
+            z-index: 20;
+            text-align: center;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #finalModal.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .letter-content {
+            font-size: 18px;
+            color: #d63031;
+            line-height: 1.6;
+            font-family: 'Nunito', sans-serif;
+            font-weight: bold;
+            text-align: left;
+            padding: 15px;
+            border: 2px dashed #ff9ff3;
+            border-radius: 10px;
+            background: #fff0f5;
+        }
+
+        .images-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .images-container img {
+            width: 48%;
+            border-radius: 10px;
+            object-fit: cover;
+            height: 150px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div id="page1" class="page active">
+        <div class="numpad-container">
+            <div class="password-display" id="pwdDisplay"></div>
+            <div class="numpad">
+                <div class="key" onclick="addNum(1)">1</div>
+                <div class="key" onclick="addNum(2)">2</div>
+                <div class="key" onclick="addNum(3)">3</div>
+                <div class="key" onclick="addNum(4)">4</div>
+                <div class="key" onclick="addNum(5)">5</div>
+                <div class="key" onclick="addNum(6)">6</div>
+                <div class="key" onclick="addNum(7)">7</div>
+                <div class="key" onclick="addNum(8)">8</div>
+                <div class="key" onclick="addNum(9)">9</div>
+                <div class="key" onclick="clearNum()">C</div>
+                <div class="key" onclick="addNum(0)">0</div>
+                <div class="key" onclick="delNum()">⌫</div>
+                <div class="key enter" onclick="checkPwd()">ENTER</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page2" class="page">
+        <div class="question-box">
+            <h1>Em có yêu anh không? ❤️</h1>
+            <div class="btn-group">
+                <button id="btnYes" class="btn" onclick="nextPage(3)">Có</button>
+                <button id="btnNo" class="btn" onclick="growYes()">Không</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page3" class="page">
+        <div id="hint1" class="hint-text">Chạm vào màn hình nhé...</div>
+        <div id="hint2" class="hint-text" style="display:none; top: 10%;">Chạm vào trái tim 3 lần nhé ❤️</div>
+        
+        <canvas id="heartCanvas"></canvas>
+        
+        <div id="giftContainer">
+            <button id="btnGift" onclick="showGift()">Mở quà 🎁</button>
+        </div>
+
+        <div id="finalModal">
+            <div class="letter-content">
+                Chúc mừng 8/3 em yêu của anh 🌹<br><br>
+                Cảm ơn em đã xuất hiện trong cuộc đời anh và làm mọi ngày trở nên đặc biệt hơn.<br><br>
+                Chỉ cần được nắm tay em đi qua những ngày bình thường thôi, với anh đã là hạnh phúc lớn nhất rồi.<br><br>
+                Mãi yêu em rất nhiều ❤️
+            </div>
+            <div class="images-container">
+                <img src="gif_decor.gif" alt="GIF Trang trí" onerror="this.src='https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif'">
+                <img src="img_decor.jpg" alt="Ảnh trang trí" onerror="this.src='https://images.unsplash.com/photo-1518192161663-5a6238d6af21?w=500&q=80'">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIC TRANG 1 ---
+        let currentPwd = "";
+        const correctPwd = "8317210";
+        const pwdDisplay = document.getElementById("pwdDisplay");
+
+        function addNum(num) {
+            if(currentPwd.length < 10) {
+                currentPwd += num;
+                updateDisplay();
+                playGlow(event.target);
+            }
+        }
+
+        function clearNum() {
+            currentPwd = "";
+            updateDisplay();
+            playGlow(event.target);
+        }
+
+        function delNum() {
+            currentPwd = currentPwd.slice(0, -1);
+            updateDisplay();
+            playGlow(event.target);
+        }
+
+        function updateDisplay() {
+            pwdDisplay.innerText = "*".repeat(currentPwd.length);
+        }
+
+        function playGlow(element) {
+            element.classList.add("glow");
+            setTimeout(() => {
+                element.classList.remove("glow");
+            }, 200);
+        }
+
+        function checkPwd() {
+            playGlow(event.target);
+            if(currentPwd === correctPwd) {
+                setTimeout(() => nextPage(2), 500);
+            } else {
+                alert("Mật khẩu sai rồi em yêu! Gợi ý: Ngày lễ hôm nay và ngày sinh/kỷ niệm của chúng mình?");
+                clearNum();
+            }
+        }
+
+        // --- LOGIC CHUYỂN TRANG ---
+        function nextPage(pageNum) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page' + pageNum).classList.add('active');
+        }
+
+        // --- LOGIC TRANG 2: NÚT CÓ TO LÊN ---
+        let yesScale = 1;
+        function growYes() {
+            yesScale += 0.8;
+            const btnYes = document.getElementById("btnYes");
+            btnYes.style.transform = `scale(${yesScale})`;
+            if(yesScale > 10) {
+                // Tự động chuyển trang nếu nút "Có" đã quá to che hết màn hình
+                setTimeout(() => nextPage(3), 500);
+            }
+        }
+
+        // --- LOGIC TRANG 3: TRÁI TIM 3D BẰNG HẠT (CANVAS) ---
+        const canvas = document.getElementById("heartCanvas");
+        const ctx = canvas.getContext("2d");
+        let cw = canvas.width = window.innerWidth;
+        let ch = canvas.height = window.innerHeight;
+        
+        let particles = [];
+        let heartVisible = false;
+        let heartClickCount = 0;
+        let time = 0;
+
+        // Công thức toán học vẽ trái tim
+        function getHeartPoint(t) {
+            let x = 16 * Math.pow(Math.sin(t), 3);
+            let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+            return {x: x, y: y};
+        }
+
+        function initParticles() {
+            particles = [];
+            for(let i = 0; i < 600; i++) {
+                let t = Math.random() * Math.PI * 2;
+                let pt = getHeartPoint(t);
+                // Tạo độ sâu Z ngẫu nhiên để có hiệu ứng 3D
+                let z = (Math.random() - 0.5) * 20; 
+                particles.push({
+                    x: pt.x + (Math.random() - 0.5)*1.5,
+                    y: pt.y + (Math.random() - 0.5)*1.5,
+                    z: z,
+                    size: Math.random() * 2 + 1,
+                    color: `hsl(${340 + Math.random()*20}, 100%, ${60 + Math.random()*40}%)`
+                });
+            }
+        }
+
+        function drawHeart3D() {
+            ctx.clearRect(0, 0, cw, ch);
+            if(!heartVisible) return;
+
+            time += 0.02; // Tốc độ xoay
+            
+            // Sắp xếp particles theo trục Z để vẽ hạt ở xa trước, hạt ở gần sau (Depth sorting)
+            let rotatedParticles = particles.map(p => {
+                // Xoay quanh trục Y
+                let cosY = Math.cos(time);
+                let sinY = Math.sin(time);
+                let rx = p.x * cosY - p.z * sinY;
+                let rz = p.x * sinY + p.z * cosY;
+                
+                // Scale tạo phối cảnh 3D
+                let scale = 300 / (300 + rz * 10); 
+                
+                // Căn giữa và phóng to trái tim (kích thước theo màn hình)
+                const baseScale = Math.min(cw, ch) / 45;
+                let sx = cw / 2 + rx * baseScale * scale;
+                let sy = ch / 2 + p.y * baseScale * scale;
+                
+                return { x: sx, y: sy, z: rz, size: p.size * scale, color: p.color };
+            });
+
+            rotatedParticles.sort((a, b) => b.z - a.z);
+
+            rotatedParticles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, Math.max(0.1, p.size), 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+                
+                // Hiệu ứng phát sáng
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = p.color;
+            });
+
+            requestAnimationFrame(drawHeart3D);
+        }
+
+        // Xử lý sự kiện click trên Canvas
+        canvas.addEventListener('click', (e) => {
+            if(!heartVisible) {
+                // Lần click đầu tiên: Hiện trái tim
+                document.getElementById('hint1').style.display = 'none';
+                document.getElementById('hint2').style.display = 'block';
+                heartVisible = true;
+                initParticles();
+                drawHeart3D();
+            } else {
+                // Đếm số lần click vào màn hình (vào trái tim)
+                heartClickCount++;
+                
+                // Hiệu ứng hạt bay tung tóe khi click
+                for(let i=0; i<30; i++){
+                    particles[Math.floor(Math.random()*particles.length)].y -= Math.random()*5;
+                }
+
+                if(heartClickCount >= 3) {
+                    document.getElementById('hint2').style.display = 'none';
+                    document.getElementById('giftContainer').style.display = 'flex';
+                }
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            cw = canvas.width = window.innerWidth;
+            ch = canvas.height = window.innerHeight;
+        });
+
+        // --- LOGIC MỞ QUÀ ---
+        function showGift() {
+            document.getElementById('finalModal').classList.add('show');
+            document.getElementById('giftContainer').style.display = 'none';
+        }
+
+    </script>
+</body>
+</html>
